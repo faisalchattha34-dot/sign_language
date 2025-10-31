@@ -1,6 +1,0 @@
-train: /content/drive/MyDrive/ASL.v1-v1.yolov8/train/images
-val: /content/drive/MyDrive/ASL.v1-v1.yolov8/valid/images
-test: /content/drive/MyDrive/ASL.v1-v1.yolov8/test/images
-
-nc: 26
-names: [A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, T, U, V, W, X, Y, Z]
