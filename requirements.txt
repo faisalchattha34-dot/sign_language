@@ -1,12 +1,17 @@
-streamlit>=1.28
-ultralytics>=8.3.0
-# lighter OpenCV build that doesn't require libGL
+# Streamlit web app
+streamlit==1.28.2
+
+# YOLOv8 and dependencies
+ultralytics==8.2.103
+
+# Headless OpenCV (no GUI dependencies)
 opencv-python-headless==4.8.1.78
+
+# Core libraries
 pillow
 numpy
-torch>=2.0.0
-# system helpers so OpenCV can load without libGL
-pygobject
-gst-plugins-base
+torch==2.2.0
+torchvision==0.17.0
+
 
 
