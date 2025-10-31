@@ -17,7 +17,7 @@ from collections import deque, Counter
 st.set_page_config(layout="wide", page_title="ASL Detection - YOLOv8")
 st.title("🤖 American Sign Language Detection (YOLOv8)")
 
-MODEL_PATH = "Models/best.pt"
+MODEL_PATH = "models/best.pt"   # ✅ fixed lowercase
 
 # Cache YOLO model for faster reload
 @st.cache_resource
@@ -67,7 +67,6 @@ elif mode == "Use Camera":
         st.image(out_img, caption="Prediction", use_column_width=True)
         st.write("Detected Signs:", labels)
 
-# ----- Video Upload -----
 # ----- Video Upload -----
 else:
     video_file = st.file_uploader("Upload a video", type=["mp4", "mov", "avi"])
