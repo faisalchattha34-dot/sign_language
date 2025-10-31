@@ -1,30 +1,38 @@
+import os
+# 🔧 Disable problematic OpenCV video backends before importing anything else
+os.environ["OPENCV_VIDEOIO_PRIORITY_MSMF"] = "0"
+os.environ["OPENCV_VIDEOIO_PRIORITY_GSTREAMER"] = "0"
+os.environ["OPENCV_VIDEOIO_PRIORITY_FFMPEG"] = "0"
+os.environ["OPENCV_LOG_LEVEL"] = "ERROR"
+
 import streamlit as st
 from ultralytics import YOLO
 import cv2
 import numpy as np
 from PIL import Image
 import tempfile
-import os
 from collections import deque, Counter
 
+# Streamlit page setup
 st.set_page_config(layout="wide", page_title="ASL Detection - YOLOv8")
-
 st.title("🤖 American Sign Language Detection (YOLOv8)")
 
 MODEL_PATH = "models/best.pt"
 
+# Cache YOLO model for faster reload
 @st.cache_resource
 def load_model():
-    model = YOLO(MODEL_PATH)
-    return model
+    return YOLO(MODEL_PATH)
 
 model = load_model()
 
+# Sidebar
 st.sidebar.header("Settings")
 mode = st.sidebar.radio("Choose mode:", ["Image Upload", "Use Camera", "Video Upload"])
 conf = st.sidebar.slider("Confidence threshold", 0.1, 0.9, 0.25)
 imgsz = st.sidebar.selectbox("Image size", [320, 480, 640, 896], index=2)
 
+# Inference function
 def run_inference(img):
     res = model.predict(source=img, conf=conf, imgsz=imgsz)
     out = res[0].plot()
@@ -37,7 +45,7 @@ def run_inference(img):
             labels.append((model.names[cls], conf_score))
     return out[:, :, ::-1], labels
 
-# ----- Image upload -----
+# ----- Image Upload -----
 if mode == "Image Upload":
     file = st.file_uploader("Upload an image", type=["jpg", "jpeg", "png"])
     if file:
@@ -50,6 +58,7 @@ if mode == "Image Upload":
 
 # ----- Camera -----
 elif mode == "Use Camera":
+    st.warning("⚠️ Webcam input is not supported on Streamlit Cloud. Please use 'Image Upload' instead.")
     img_file = st.camera_input("Take a picture")
     if img_file:
         img = Image.open(img_file).convert("RGB")
@@ -58,33 +67,7 @@ elif mode == "Use Camera":
         st.image(out_img, caption="Prediction", use_column_width=True)
         st.write("Detected Signs:", labels)
 
-# ----- Video -----
+# ----- Video Upload -----
 else:
     video_file = st.file_uploader("Upload a video", type=["mp4", "mov", "avi"])
-    if video_file:
-        tfile = tempfile.NamedTemporaryFile(delete=False)
-        tfile.write(video_file.read())
-        cap = cv2.VideoCapture(tfile.name)
-        stframe = st.empty()
-        sequence = []
-        window = deque(maxlen=7)
-
-        while cap.isOpened():
-            ret, frame = cap.read()
-            if not ret:
-                break
-            frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-            out_img, labels = run_inference(frame_rgb)
-
-            pred = labels[0][0] if labels else None
-            if pred:
-                window.append(pred)
-                most = Counter(window).most_common(1)[0][0]
-                if not sequence or sequence[-1] != most:
-                    sequence.append(most)
-
-            stframe.image(out_img, use_column_width=True)
-            st.markdown(f"### 🧠 Predicted Sequence: {' '.join(sequence)}")
-
-        cap.release()
-        os.unlink(tfile.name)
+    if vid
