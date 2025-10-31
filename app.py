@@ -68,6 +68,33 @@ elif mode == "Use Camera":
         st.write("Detected Signs:", labels)
 
 # ----- Video Upload -----
+# ----- Video Upload -----
 else:
     video_file = st.file_uploader("Upload a video", type=["mp4", "mov", "avi"])
-    if vid:
+    if video_file:
+        tfile = tempfile.NamedTemporaryFile(delete=False)
+        tfile.write(video_file.read())
+        cap = cv2.VideoCapture(tfile.name)
+        stframe = st.empty()
+        sequence = []
+        window = deque(maxlen=7)
+
+        while cap.isOpened():
+            ret, frame = cap.read()
+            if not ret:
+                break
+            frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+            out_img, labels = run_inference(frame_rgb)
+
+            pred = labels[0][0] if labels else None
+            if pred:
+                window.append(pred)
+                most = Counter(window).most_common(1)[0][0]
+                if not sequence or sequence[-1] != most:
+                    sequence.append(most)
+
+            stframe.image(out_img, use_column_width=True)
+            st.markdown(f"### 🧠 Predicted Sequence: {' '.join(sequence)}")
+
+        cap.release()
+        os.unlink(tfile.name)
