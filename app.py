@@ -70,4 +70,4 @@ elif mode == "Use Camera":
 # ----- Video Upload -----
 else:
     video_file = st.file_uploader("Upload a video", type=["mp4", "mov", "avi"])
-    if vid
+    if vid:
