@@ -17,7 +17,7 @@ from collections import deque, Counter
 st.set_page_config(layout="wide", page_title="ASL Detection - YOLOv8")
 st.title("🤖 American Sign Language Detection (YOLOv8)")
 
-MODEL_PATH = "models/best.pt"   # ✅ fixed lowercase
+MODEL_PATH = "best.pt"   # ✅ fixed lowercase
 
 # Cache YOLO model for faster reload
 @st.cache_resource
